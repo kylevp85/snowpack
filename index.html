@@ -7,9 +7,31 @@
   <script src="https://niviz.org/lib/niviz-bundle-latest.js"></script>
 
   <style>
-    body { font-family: sans-serif; }
-    svg { border: 1px solid #ccc; }
-  </style>
+  body {
+    font-family: sans-serif;
+  }
+
+  #plots {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  #timeline {
+    width: 600px;
+    height: 400px;
+  }
+
+  #profile {
+    width: 400px;
+    height: 400px;
+  }
+
+  svg {
+    border: 1px solid #ccc;
+  }
+</style>
 </head>
 
 <script>
@@ -63,9 +85,10 @@ function parameter (p) {
 
 <h2>SNOWPACK – NiViz Visualization</h2>
 
-<svg id="timeline" width="700" height="450"></svg>
-<br><br>
-<svg id="profile" width="450" height="450"></svg>
+<div id="plots">
+  <svg id="timeline"></svg>
+  <svg id="profile"></svg>
+</div>
 
 <div id="currentdate">
   Hover over the timeline graph
