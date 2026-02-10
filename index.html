@@ -5,27 +5,33 @@
 
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://niviz.org/lib/niviz-bundle-latest.js"></script>
-
-  <style>
+  
+<style>
   body {
     font-family: sans-serif;
+    margin: 12px;
   }
 
   #plots {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    gap: 20px;
+    gap: 24px;
+    flex-wrap: nowrap;
   }
 
+  /* Main seasonal timeline */
   #timeline {
-    width: 600px;
-    height: 400px;
+    width: 65vw;
+    height: 75vh;
+    min-width: 600px;
   }
 
+  /* Point profile */
   #profile {
-    width: 400px;
-    height: 400px;
+    width: 30vw;
+    height: 75vh;
+    min-width: 380px;
   }
 
   svg {
