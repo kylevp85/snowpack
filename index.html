@@ -34,14 +34,6 @@
     min-width: 380px;
   }
 
-  /* SMET timeline */
-  #smet_timeline {
-    width: 95vw;
-    height: 35vh;
-    min-height: 260px;
-    margin-top: 12px;
-  }
-
   svg {
     border: 1px solid #ccc;
   }
@@ -51,7 +43,6 @@
 <script>
 var timelinegraph = null;
 var profilegraph  = null;
-var smetgraph     = null;
 
 function draw () {
 
@@ -84,32 +75,6 @@ function draw () {
       });
     }
   });
-
-  /* ---- SMET FILE (FORCING) ---- */
-  $.ajax({
-    url: "data/YESA2.smet",
-    dataType: "text",
-    success: function (response) {
-      niviz.parse(response, 'smet', function (error, station) {
-        if (error) {
-          console.error('NiViz SMET parse error', error);
-        } else {
-          smetgraph = niviz.draw(
-            'Timeline',
-            station,
-            $('#smet_timeline'),
-            {
-    parameter: 'TA',
-    average: false
-  }
-          );
-        }
-      });
-    },
-    error: function () {
-      console.error("Failed to load SMET file");
-    }
-  });
 }
 
 function update (profile) {
@@ -123,11 +88,6 @@ function parameter (p) {
   timelinegraph.draw();
 }
 
-function smetParameter (p) {
-  if (!smetgraph) return;
-  smetgraph.setProperties({ parameter: p });
-  smetgraph.draw();
-}
 </script>
 
 <body onload="draw()">
@@ -146,22 +106,11 @@ function smetParameter (p) {
 <br>
 
 <!-- PRO controls -->
+<button onclick="parameter('grainshape')">Grain Shape</button>
 <button onclick="parameter('temperature')">Temperature</button>
 <button onclick="parameter('density')">Density</button>
-<button onclick="parameter('grainshape')">Grain Shape</button>
 <button onclick="parameter('grainsize')">Grain Size</button>
 <button onclick="parameter('wetness')">Wetness</button>
-
-<hr>
-
-<h3>Meteorological Data (SMET)</h3>
-
-<svg id="smet_timeline" width="1200" height="300"></svg>
-
-<br>
-
-<!-- SMET controls -->
-<button onclick="smetParameter('ta')">Air Temp</button>
 
 </body>
 </html>
