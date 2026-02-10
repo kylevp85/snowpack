@@ -18,7 +18,7 @@ var profilegraph  = null;
 
 function draw () {
   $.ajax({
-    url: "data/yesa2.pro",
+    url: "data/YESA2.pro",
     success: function (response){
       niviz.parse(response, 'pro', function (error, station) {
         if (error) {
