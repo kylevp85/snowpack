@@ -1,1 +1,84 @@
-<h1>SNOWPACK</h1>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+  <script src="https://niviz.org/lib/niviz-bundle-latest.js"></script>
+
+  <style>
+    body { font-family: sans-serif; }
+    svg { border: 1px solid #ccc; }
+  </style>
+</head>
+
+<script>
+var timelinegraph = null;
+var profilegraph  = null;
+
+function draw () {
+  $.ajax({
+    url: "data/hatcher_latest.pro",
+    success: function (response){
+      niviz.parse(response, 'pro', function (error, station) {
+        if (error) {
+          alert('NiViz parse error');
+        } else {
+          niviz.Common.defaults.language = 'english';
+
+          timelinegraph = niviz.draw(
+            'Timeline',
+            station,
+            $('#timeline'),
+            {}
+          );
+
+          profilegraph = niviz.draw(
+            'SimpleProfile',
+            station,
+            $('#profile'),
+            { miniature: true }
+          );
+
+          station.emitter.on('profile', update);
+        }
+      });
+    }
+  });
+}
+
+function update (profile) {
+  document.getElementById('currentdate').innerText =
+    profile.date.format('DD MMM YYYY HH:mm');
+}
+
+function parameter (p) {
+  if (!timelinegraph) return;
+  timelinegraph.setProperties({ parameter: p });
+  timelinegraph.draw();
+}
+</script>
+
+<body onload="draw()">
+
+<h2>SNOWPACK – NiViz Visualization</h2>
+
+<svg id="timeline" width="700" height="450"></svg>
+<br><br>
+<svg id="profile" width="450" height="450"></svg>
+
+<div id="currentdate">
+  Hover over the timeline graph
+</div>
+
+<br>
+
+<button onclick="parameter('temperature')">Temperature</button>
+<button onclick="parameter('density')">Density</button>
+<button onclick="parameter('grainshape')">Grain Shape</button>
+<button onclick="parameter('grainsize')">Grain Size</button>
+<button onclick="parameter('wetness')">Wetness</button>
+
+</body>
+</html>
+
