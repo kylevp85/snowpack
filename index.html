@@ -5,94 +5,134 @@
 
   <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
   <script src="https://niviz.org/lib/niviz-bundle-latest.js"></script>
-  
-<style>
-  body {
-    font-family: sans-serif;
-    margin: 12px;
-  }
 
-  #plots {
-    display: flex;
-    flex-direction: row;
-    align-items: flex-start;
-    gap: 24px;
-    flex-wrap: nowrap;
-  }
+  <style>
+    body {
+      font-family: sans-serif;
+      margin: 12px;
+    }
 
-  /* Main seasonal timeline */
-  #timeline {
-    width: 65vw;
-    height: 75vh;
-    min-width: 600px;
-  }
+    #plots {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 24px;
+      flex-wrap: nowrap;
+    }
 
-  /* Point profile */
-  #profile {
-    width: 30vw;
-    height: 75vh;
-    min-width: 380px;
-  }
+    /* Main seasonal timeline */
+    #timeline {
+      width: 65vw;
+      height: 75vh;
+      min-width: 600px;
+    }
 
-  svg {
-    border: 1px solid #ccc;
-  }
-</style>
+    /* Point profile */
+    #profile {
+      width: 30vw;
+      height: 75vh;
+      min-width: 380px;
+    }
+
+    svg {
+      border: 1px solid #ccc;
+    }
+
+    select {
+      font-size: 16px;
+      padding: 4px 8px;
+      margin-left: 8px;
+    }
+
+    button {
+      margin-right: 6px;
+      margin-top: 6px;
+    }
+  </style>
 </head>
 
 <script>
 var timelinegraph = null;
 var profilegraph  = null;
 
-function draw () {
+// Load selected station
+function loadStation(filename) {
 
-  /* ---- PRO FILE (SNOWPACK STATE) ---- */
   $.ajax({
-    url: "data/YESA2.pro",
-    success: function (response){
+    url: "data/" + filename,
+    success: function (response) {
+
       niviz.parse(response, 'pro', function (error, station) {
+
         if (error) {
           alert('NiViz PRO parse error');
-        } else {
-          niviz.Common.defaults.language = 'english';
-
-          timelinegraph = niviz.draw(
-            'Timeline',
-            station,
-            $('#timeline'),
-            {parameter: 'grainshape'}
-          );
-
-          profilegraph = niviz.draw(
-            'SimpleProfile',
-            station,
-            $('#profile'),
-            { miniature: true }
-          );
-
-          station.emitter.on('profile', update);
+          return;
         }
+
+        niviz.Common.defaults.language = 'english';
+
+        // Clear previous plots
+        $('#timeline').empty();
+        $('#profile').empty();
+
+        timelinegraph = niviz.draw(
+          'Timeline',
+          station,
+          $('#timeline'),
+          { parameter: 'grainshape' }
+        );
+
+        profilegraph = niviz.draw(
+          'SimpleProfile',
+          station,
+          $('#profile'),
+          { miniature: true }
+        );
+
+        station.emitter.on('profile', update);
       });
+    },
+    error: function () {
+      alert("Failed to load " + filename);
     }
   });
 }
 
-function update (profile) {
+// Called on page load
+function draw() {
+  loadStation("YESA2.pro");
+}
+
+function update(profile) {
   document.getElementById('currentdate').innerText =
     profile.date.format('DD MMM YYYY HH:mm');
 }
 
-function parameter (p) {
+// Timeline parameter buttons
+function parameter(p) {
   if (!timelinegraph) return;
   timelinegraph.setProperties({ parameter: p });
   timelinegraph.draw();
 }
 
+// Dropdown change handler
+function changeSite(selectObj) {
+  loadStation(selectObj.value);
+}
 </script>
 
 <body onload="draw()">
 
 <h2>SNOWPACK – NiViz Visualization</h2>
+
+<label for="siteSelect"><strong>Select Site:</strong></label>
+<select id="siteSelect" onchange="changeSite(this)">
+  <option value="YESA2.pro">YESA2</option>
+  <option value="ARCA2.pro">ARCA2</option>
+  <option value="HATA2.pro">HATA2</option>
+</select>
+
+<br><br>
 
 <div id="plots">
   <svg id="timeline"></svg>
@@ -105,7 +145,7 @@ function parameter (p) {
 
 <br>
 
-<!-- PRO controls -->
+<!-- Timeline controls -->
 <button onclick="parameter('grainshape')">Grain Shape</button>
 <button onclick="parameter('temperature')">Temperature</button>
 <button onclick="parameter('density')">Density</button>
@@ -114,5 +154,3 @@ function parameter (p) {
 
 </body>
 </html>
-
-
